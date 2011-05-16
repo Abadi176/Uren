@@ -1,0 +1,158 @@
+a {
+outline-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: #000;
+  text-decoration: none;
+}
+
+body:before {
+content: "";
+position: fixed;
+top: -10px;
+left: -10px;
+width: 110%;
+height: 10px;
+
+-webkit-box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+-moz-box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+
+z-index: 100;
+}
+
+body:after {
+content: "";
+position: fixed;
+bottom: -10px;
+left: -10px;
+width: 110%;
+height: 10px;
+
+-webkit-box-shadow: 0px 0px 15px rgba(0,0,0,.8);
+-moz-box-shadow: 0px 0px 15px rgba(0,0,0,.8);
+box-shadow: 0px 0px 15px rgba(0,0,0,.8);
+
+z-index: 100;
+}
+
+body {
+  background:#EEE;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#header {
+  width: 100%;
+  height: 100px;
+  background-color: #555;
+  border-bottom: 10px solid #666;
+  
+-webkit-box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+-moz-box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+box-shadow: 0px 0px 10px rgba(0,0,0,.8);
+}
+
+#logo {
+  display: block;
+  width: 80%;
+  margin: auto;
+  color: #CCC;
+  font-size: 30pt;
+  text-decoration: none;
+}
+
+#logo strong {
+  color: #AAA;
+}
+
+#content {
+  width: 80%;
+  margin: auto;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
+  
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px; /* future proofing */
+}
+
+table {
+  background-color: #CCC;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #000;
+  width: 100%;
+}
+
+thead, thead td {
+  font-weight: bold;
+  background-color: #CCC !important;
+}
+
+tr {
+  margin: 0;
+  padding: 0;
+  background-color: #EEE;
+}
+
+td {
+  margin: 0;
+  padding: 0;
+  background-color: #EEE;
+}
+
+#totaal {
+  width: 20%;
+}
+.datum {
+  width: 20%;
+}
+.aantalurentabel {
+  width: 10%;
+}
+.taak {
+  width: 50%;
+}
+
+.disabled {
+  background-color: #CCC !important;
+}
+
+#logo:after {
+  content: "\267E"; /* Here comes the ivy leaf */
+  display: inline-block; /* Put it on a new line */
+  text-align: center; /* Put it in the middle */
+  text-shadow: 0px 1px 1px #888;
+}
+
+#content:after {
+  content: "\267D"; /* Here comes the ivy leaf */
+  font-size: 200%; /* Makes the leaf larger than the normal text */
+  margin: auto;
+  width: 80%;
+  color: #333;
+  display: block; /* Put it on a new line */
+  text-align: center; /* Put it in the middle */
+  text-shadow: 0px 1px 1px #888;
+}
+#copy {
+  margin: auto; 
+  width: 80%;
+  text-align:center; 
+  color:#333; 
+  text-shadow:0px 1px 1px #AAA; 
+  margin-top: 20px; 
+  margin-bottom: 20px;
+}
+
+#copy strong {
+  color: black;
+}

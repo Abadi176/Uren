@@ -1,7 +1,7 @@
 <?php
 $message = '';
 //MySQL connect
-$mysql_connection = mysql_connect('localhost', 'root', '');
+$mysql_connection = mysql_connect('localhost', 'root', 'root');
 if (!$mysql_connection) {
     die('Could not connect: ' . mysql_error());
 }
@@ -70,7 +70,7 @@ if(isset($_POST['submit']))
 //Get hourlist
 $sql = "SELECT * 
 	FROM uren
-	ORDER BY user ASC";
+	ORDER BY datum ASC";
 $result = mysql_query($sql);
 if (!$result) {
     die('Could not get result: ' . mysql_error());
@@ -80,24 +80,34 @@ while ($row = mysql_fetch_assoc($result)) {
 }
 
 ?>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.12.custom.css" rel="stylesheet" />	
+<title>Sexy Uren Registratie</title>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.12.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/styles.css" rel="stylesheet" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
 <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
 		
-<script>
+<script type="text/javascript">
 	$(function() {
 		$( "#datepicker" ).datepicker();
 	});
 </script>
 </head>
 <body>
-	<div>
-		<strong>Toevoegen</strong><br />
-		<form action="./index.php" method="POST">
-			User :
+    <div id="header">
+      <a href="index.php" id="logo">Sexy <strong>Uren Registratie</strong> </a>
+    </div>
+    <div id="content">
+		<h3>Toevoegen</h3>
+		<form action="./index.php" method="post">
+			<div>User :
 			<select name="user_id">
+				<option value="0">Selecteer...</option>
 				<?php
 				foreach($userlist as $userdata) {
 				?>
@@ -116,22 +126,25 @@ while ($row = mysql_fetch_assoc($result)) {
 			<input type="text" name="task" value="fappen"/>
 			
 			<input type="submit" name="submit" value="Submit"/>
+      		</div>
 		</form>
 	<p><?=$message?></p>
-	</div>
 	<hr />
-	<table border="1" width="100%">
-		<tr>
-			<td>Naam</td>
-			<td>Aantal uren</td>
-			<td>Datum</td>
-			<td width="50%">Taak</td>
-			<td>Totaal</td>
-		</tr>
 <?php
 //Link the userlist and entry list
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 {
+?>
+    <h3><?=$userlist[$i]['user_name']?></h3>
+	<table>
+		<thead>
+		<tr>
+			<td class="aantalurentabel">Aantal uren</td>
+			<td class="datum">Datum</td>
+			<td class="taak">Taak</td>
+		</tr>
+		</thead>
+<?
 	for($j=0, $sizeuren = sizeof($hourlist); $j < $sizeuren; $j++)
 	{
 		
@@ -141,11 +154,9 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 			$userlist[$i]['uren'] += $hourlist[$j]['aantal_uren'];
 ?>
 		<tr>
-			<td><?=($totaal_listed == false) ? $userlist[$i]['user_name'] : '';?></td>
 			<td><?=$hourlist[$j]['aantal_uren'] ?></td>
 			<td><?=date('d-m-y', $hourlist[$j]['datum'])?></td>
 			<td><?=$hourlist[$j]['taak']?></td>
-			<td></td>
 		</tr>	
 <?			
 			$totaal_listed = true;
@@ -153,19 +164,46 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 	}
 ?>
 		<tr style="background-color: lightgrey;">
-			<td></td>
-			<td></td>
-			<td></td>
-			<td style="text-align: right;"><?=$userlist[$i]['user_name'] ?></td>
-			<td><?=$userlist[$i]['uren'] ?></td>
+			<td>Totaal: <?=($userlist[$i]['uren'] > 0) ? $userlist[$i]['uren']:0 ?></td>
+			<td class="disabled"></td>
+			<td class="disabled"></td>
 		</tr>	
+	</table>
+	<br />
 <?
 	$totaal_listed = false;
 }
+
+$topper = false;
+$slacker = false;
+$average = 0;
+$total = 0;
+foreach($userlist as $user)
+{
+  if($user['uren'] > $topper['uren'])
+  {
+    $topper = $user;
+  }
+  if($slacker == false)
+  {
+    $slacker = $user;
+  }
+  if(($user['uren'] < $slacker['uren']) && ($slacker != false))
+  {
+    $slacker = $user;
+  }
+  $total += $user['uren'];
+}
+$average = $total / sizeof($userlist);
 ?>
-	</table>
+      <hr />
+      <h3>Stats</h3>
+      <p><strong>Top teamlid:</strong> <?=$topper['user_name'] ?> met <?=$topper['uren'] ?> uur</p>
+      <p><strong>Grootste slacker:</strong> <?=$slacker['user_name'] ?> met <?=($slacker['uren'] != 0)? $slacker['uren'] : 0 ?> uur</p>
+      <p><strong>Gemiddeld aantal uren:</strong> <?=$average ?></p>
+	</div>
 	
-	
+	<p id="copy"><strong>Sexy Uren Registratie</strong> by Hidde "<a href="http://www.hiddejansen.com"><strong>Ganonmaster</strong></a>" Jansen &copy; All Rights Reserved</p>
 </body>
 </html>
 <?php
