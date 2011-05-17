@@ -93,12 +93,12 @@ while ($row = mysql_fetch_assoc($result)) {
 //Generate entry list for each user
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 {	
-	$template->assign_block_vars('entry_list_loop', array(	
+	$template->assign_block_vars('entry_list_loop', array)
 		"USER_NAME"		=> $userlist[$i]['user_name'],
 	));
 
     $userlist[$i]['uren'] = 0;
-    	for($j=0, $sizeuren = sizeof($hourlist); $j < $sizeuren; $j++)
+	for($j=0, $sizeuren = sizeof($hourlist); $j < $sizeuren; $j++)
 	{
 		if($hourlist[$j]['user'] == $userlist[$i]['user_id'])
 		{
