@@ -105,8 +105,8 @@ foreach($userlist as $userdata) {
 //Get hourlist
 $sql = "SELECT * 
 	FROM uren
-	WHERE datum > '" . mysql_real_escape_string($begin_limit) . "'
-		AND datum < '" . mysql_real_escape_string($end_limit) . "'
+	WHERE datum >= '" . mysql_real_escape_string($begin_limit) . "'
+		AND datum <= '" . mysql_real_escape_string($end_limit) . "'
 	ORDER BY datum ASC";
 $result = mysql_query($sql);
 if (!$result) {
