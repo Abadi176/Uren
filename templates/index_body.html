@@ -46,6 +46,25 @@
       			</div>
 			</form>
 			<hr />
+		<h3>Filter <sup style="font-size: 70%; color: darkred;">BETA</sup></h3>
+			<form action="./index.php" method="get">
+			Jaar: 
+				<select name="year_sort">
+					<!-- BEGIN years_sorting -->
+					<option value="{years_sorting.YEAR}" <!-- IF years_sorting.SELECTED == 1 -->selected="selected"<!-- ENDIF -->>{years_sorting.YEAR}</option>
+					<!-- END years_sorting -->
+				</select>
+			
+			Week: 
+				<select name="week_sort">
+					<!-- BEGIN week_sorting -->
+					<option value="{week_sorting.WEEK}" <!-- IF week_sorting.SELECTED == 1 -->selected="selected"<!-- ENDIF -->>{week_sorting.WEEK}</option>
+					<!-- END week_sorting -->
+				</select>
+				<input type="submit" name="sort" value="Sorteer">
+				<a href="index.php" style="font-size: 80%; text-decoration: underline;">Verwijder huidig filter.</a>
+			</form>
+			<hr />
 			<!-- BEGIN entry_list_loop -->
 			<h3>{entry_list_loop.USER_NAME}</h3>
 			<table>

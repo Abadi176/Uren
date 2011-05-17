@@ -14,6 +14,9 @@ $template->set_filenames(array(
 /*/
 
 $message = '';
+$error = false;
+$begin_limit = 0;
+$end_limit = time();
 
 //Get userlist
 $sql = "SELECT * 
@@ -27,12 +30,7 @@ while ($row = mysql_fetch_assoc($result)) {
     $userlist[] = $row;
 }
 
-//Handle submission
-$selecteduser = (isset($_POST['user_id'])) ? $_POST['user_id'] : '';
-$task = (isset($_POST['task'])) ? $_POST['task'] : '';
-$selecteddate = (isset($_POST['datefield'])) ? $_POST['datefield'] : '';
-$aantaluren = (isset($_POST['aantaluren'])) ? intval($_POST['aantaluren']) : '';
-
+//Handle deletion
 $delete_id = (isset($_GET['delete'])) ? intval($_GET['delete']) : '';
 
 if($delete_id > 0)
@@ -43,6 +41,20 @@ if($delete_id > 0)
 	$result = mysql_query($sql);
 }
 
+//Handle sorting
+$sort_week = (isset($_GET['week_sort'])) ? intval($_GET['week_sort']) : '';
+$sort_year = (isset($_GET['year_sort'])) ? intval($_GET['year_sort']) : '';
+if(!empty($sort_year) && !empty($sort_year))
+{
+	$begin_limit = getFirstDayOfWeek($sort_year, $sort_week);
+	$end_limit = getLastDayOfWeek($sort_year, $sort_week);
+}
+
+//Handle submission
+$selecteduser = (isset($_POST['user_id'])) ? $_POST['user_id'] : '';
+$task = (isset($_POST['task'])) ? $_POST['task'] : '';
+$selecteddate = (isset($_POST['datefield'])) ? $_POST['datefield'] : '';
+$aantaluren = (isset($_POST['aantaluren'])) ? intval($_POST['aantaluren']) : '';
 
 if(isset($_POST['submit']))	
 {	
@@ -93,6 +105,8 @@ foreach($userlist as $userdata) {
 //Get hourlist
 $sql = "SELECT * 
 	FROM uren
+	WHERE datum > '" . mysql_real_escape_string($begin_limit) . "'
+		AND datum < '" . mysql_real_escape_string($end_limit) . "'
 	ORDER BY datum ASC";
 $result = mysql_query($sql);
 if (!$result) {
@@ -132,6 +146,7 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 	$totaal_listed = false;
 }
 
+//Stats
 $topper = false;
 $slacker = false;
 $average = 0;
@@ -152,8 +167,40 @@ foreach($userlist as $user)
 	}
 	$total += $user['uren'];
 }
-
 $average = $total / sizeof($userlist);
+
+//Sorting features
+
+//Generate years sorting list
+for($i=0; $i < 50; $i++)
+{
+	$selected = ((2010 + $i) == intval(date('Y'))) ? 1 : 0;
+	if(!empty($sort_year))
+	{
+		$selected = ($i+2010 == $sort_year) ? 1 : 0;
+	}
+
+	$template->assign_block_vars('years_sorting', array(
+		"YEAR"		=> 2010 + $i,
+		"SELECTED"	=> $selected,
+	));
+}
+
+//Generate week sorting list
+for($i=0; $i < 52; $i++)
+{
+	$selected = ($i+1 == intval(date('W'))) ? 1 : 0;
+	if(!empty($sort_week))
+	{
+		$selected = ($i+1 == $sort_week) ? 1 : 0;
+	}
+
+	$template->assign_block_vars('week_sorting', array(
+		"WEEK"		=> $i+1,
+		"SELECTED"	=> $selected,
+	));
+}
+
 
 $template->assign_vars(array(
 	"CURRENT_DATE"	=> date("m/d/y",time()),
@@ -168,3 +215,22 @@ $template->assign_vars(array(
 
 //OUTPUT FUCKING EVERYTHING
 $template->display('body');
+
+
+//Useful function
+function getLastDayOfWeek($year, $weeknr){
+ 
+    $offset = date('w', mktime(0,0,0,1,1,$year));
+    $offset = ($offset < 5) ? 1-$offset : 8-$offset;
+    $sunday = mktime(0,0,0,1,7+$offset,$year);
+    return strtotime('+' . ($weeknr - 1) . ' weeks', $sunday);
+}
+
+function getFirstDayOfWeek($year, $weeknr)
+{
+	$offset = date('w', mktime(0,0,0,1,1,$year));
+	$offset = ($offset < 5) ? 1-$offset : 8-$offset;
+	$monday = mktime(0,0,0,1,1+$offset,$year);
+
+	return strtotime('+' . ($weeknr - 1) . ' weeks', $monday);
+}
