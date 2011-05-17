@@ -1,13 +1,15 @@
 <?php
+include_once('config.php');
+
 $message = '';
 //MySQL connect
-$mysql_connection = mysql_connect('localhost', 'root', 'root');
+$mysql_connection = mysql_connect('localhost', $mysql_username, $mysql_password);
 if (!$mysql_connection) {
-    die('Could not connect: ' . mysql_error());
+    die(mysql_error());
 }
 $db_selected = mysql_select_db('uren', $mysql_connection);
 if (!$db_selected) {
-    die ('Can\'t use uren : ' . mysql_error());
+    die (mysql_error());
 }
 
 //Get userlist
