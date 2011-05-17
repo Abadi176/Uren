@@ -32,7 +32,18 @@ $selecteduser = (isset($_POST['user_id'])) ? $_POST['user_id'] : '';
 $task = (isset($_POST['task'])) ? $_POST['task'] : '';
 $selecteddate = (isset($_POST['datefield'])) ? $_POST['datefield'] : '';
 $aantaluren = (isset($_POST['aantaluren'])) ? intval($_POST['aantaluren']) : '';
-	
+
+$delete_id = (isset($_GET['delete'])) ? intval($_GET['delete']) : '';
+
+if($delete_id > 0)
+{
+	$sql = "DELETE 
+		FROM uren 
+		WHERE entry_id = '" . mysql_real_escape_string($delete_id) . "'";
+	$result = mysql_query($sql);
+}
+
+
 if(isset($_POST['submit']))	
 {	
 	if(empty($selecteduser) || empty($selecteddate) || empty($aantaluren) || empty($task))
@@ -103,9 +114,10 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 		if($hourlist[$j]['user'] == $userlist[$i]['user_id'])
 		{
 			$template->assign_block_vars('entry_list_loop.single_entry', array(
-				"HOURS"	=> $hourlist[$j]['aantal_uren'],
-				"DATE"	=> date('d-m-y', $hourlist[$j]['datum']),
-				"TASK"	=> htmlspecialchars($hourlist[$j]['taak']),
+				"HOURS"		=> $hourlist[$j]['aantal_uren'],
+				"DATE"		=> date('d-m-y', $hourlist[$j]['datum']),
+				"TASK"		=> htmlspecialchars($hourlist[$j]['taak']),
+				"ENTRY_ID"	=> $hourlist[$j]['entry_id'],
 			));
 						
 			$userlist[$i]['urenentries'] = $hourlist[$j];

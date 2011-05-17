@@ -46,6 +46,7 @@
 					<td class="aantalurentabel">Aantal uren</td>
 					<td class="datum">Datum</td>
 					<td class="taak">Taak</td>
+					<td></td>
 				</tr>
 				</thead>
 				<!-- BEGIN single_entry -->
@@ -53,6 +54,7 @@
 					<td>{entry_list_loop.single_entry.HOURS}</td>
 					<td>{entry_list_loop.single_entry.DATE}</td>
 					<td>{entry_list_loop.single_entry.TASK}</td>
+					<td><a href="index.php?delete={entry_list_loop.single_entry.ENTRY_ID}">Delete</a></td>
 				</tr>	
 				<!-- END single_entry -->
 				<!-- BEGIN totals -->
