@@ -93,7 +93,7 @@ while ($row = mysql_fetch_assoc($result)) {
 //Generate entry list for each user
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 {	
-	$template->assign_block_vars('entry_list_loop', array)
+	$template->assign_block_vars('entry_list_loop', array(
 		"USER_NAME"		=> $userlist[$i]['user_name'],
 	));
 
