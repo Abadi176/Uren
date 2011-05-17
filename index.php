@@ -1,16 +1,19 @@
 <?php
-include_once('config.php');
+error_reporting(E_ALL); 
+
+include_once('includes/template.php');
+include_once('includes/page_header.php');
+
+//Set the current template
+$template->set_filenames(array(
+    'body' => 'index_body.html'
+));
+
+/*
+/* Now the actual page
+/*/
 
 $message = '';
-//MySQL connect
-$mysql_connection = mysql_connect('localhost', $mysql_username, $mysql_password);
-if (!$mysql_connection) {
-    die(mysql_error());
-}
-$db_selected = mysql_select_db('uren', $mysql_connection);
-if (!$db_selected) {
-    die (mysql_error());
-}
 
 //Get userlist
 $sql = "SELECT * 
@@ -24,12 +27,11 @@ while ($row = mysql_fetch_assoc($result)) {
     $userlist[] = $row;
 }
 
-
 //Handle submission
 $selecteduser = (isset($_POST['user_id'])) ? $_POST['user_id'] : '';
 $task = (isset($_POST['task'])) ? $_POST['task'] : '';
 $selecteddate = (isset($_POST['datefield'])) ? $_POST['datefield'] : '';
-$aantaluren = (isset($_POST['aantaluren'])) ? $_POST['aantaluren'] : '';
+$aantaluren = (isset($_POST['aantaluren'])) ? intval($_POST['aantaluren']) : '';
 	
 if(isset($_POST['submit']))	
 {	
@@ -69,6 +71,14 @@ if(isset($_POST['submit']))
 	}
 }
 
+//Generate user list
+foreach($userlist as $userdata) {
+	$template->assign_block_vars('user_loop', array(
+		"USER_ID"	=> $userdata['user_id'],
+		"USER_NAME"	=> $userdata['user_name'],
+	));
+}
+
 //Get hourlist
 $sql = "SELECT * 
 	FROM uren
@@ -80,99 +90,33 @@ if (!$result) {
 while ($row = mysql_fetch_assoc($result)) {
     $hourlist[] = $row;
 }
-
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-<title>Sexy Uren Registratie</title>
-<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.12.custom.css" rel="stylesheet" />
-<link type="text/css" href="css/styles.css" rel="stylesheet" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
-		
-<script type="text/javascript">
-	$(function() {
-		$( "#datepicker" ).datepicker();
-	});
-</script>
-</head>
-<body>
-    <div id="header">
-      <a href="index.php" id="logo">Sexy <strong>Uren Registratie</strong> </a>
-    </div>
-    <div id="content">
-		<h3>Toevoegen</h3>
-		<form action="./index.php" method="post">
-			<div>User :
-			<select name="user_id">
-				<option value="0">Selecteer...</option>
-				<?php
-				foreach($userlist as $userdata) {
-				?>
-						<option value="<?=$userdata['user_id']?>"><?=$userdata['user_name']?></option>
-				<?php
-				}
-				?>	
-			</select>
-
-			Datum :
-			<input type="text" id="datepicker" name="datefield" value="<?=date("m/d/y",time())?>"/>
-			
-			Aantal uren:
-			<input type="text" name="aantaluren" value="0"/>
-			Taak:
-			<input type="text" name="task" value="fappen"/>
-			
-			<input type="submit" name="submit" value="Submit"/>
-      		</div>
-		</form>
-	<p><?=$message?></p>
-	<hr />
-<?php
-//Link the userlist and entry list
+//Generate entry list for each user
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
-{
-?>
-    <h3><?=$userlist[$i]['user_name']?></h3>
-	<table>
-		<thead>
-		<tr>
-			<td class="aantalurentabel">Aantal uren</td>
-			<td class="datum">Datum</td>
-			<td class="taak">Taak</td>
-		</tr>
-		</thead>
-<?
-	for($j=0, $sizeuren = sizeof($hourlist); $j < $sizeuren; $j++)
+{	
+	$template->assign_block_vars('entry_list_loop', array(	
+		"USER_NAME"		=> $userlist[$i]['user_name'],
+	));
+
+    $userlist[$i]['uren'] = 0;
+    	for($j=0, $sizeuren = sizeof($hourlist); $j < $sizeuren; $j++)
 	{
-		
 		if($hourlist[$j]['user'] == $userlist[$i]['user_id'])
 		{
+			$template->assign_block_vars('entry_list_loop.single_entry', array(
+				"HOURS"	=> $hourlist[$j]['aantal_uren'],
+				"DATE"	=> date('d-m-y', $hourlist[$j]['datum']),
+				"TASK"	=> htmlspecialchars($hourlist[$j]['taak']),
+			));
+						
 			$userlist[$i]['urenentries'] = $hourlist[$j];
 			$userlist[$i]['uren'] += $hourlist[$j]['aantal_uren'];
-?>
-		<tr>
-			<td><?=$hourlist[$j]['aantal_uren'] ?></td>
-			<td><?=date('d-m-y', $hourlist[$j]['datum'])?></td>
-			<td><?=$hourlist[$j]['taak']?></td>
-		</tr>	
-<?			
-			$totaal_listed = true;
 		}
 	}
-?>
-		<tr style="background-color: lightgrey;">
-			<td>Totaal: <?=($userlist[$i]['uren'] > 0) ? $userlist[$i]['uren']:0 ?></td>
-			<td class="disabled"></td>
-			<td class="disabled"></td>
-		</tr>	
-	</table>
-	<br />
-<?
+	
+	$template->assign_block_vars('entry_list_loop.totals', array(
+		"TOTAL_HOURS"	=> $userlist[$i]['uren'],
+	));
+
 	$totaal_listed = false;
 }
 
@@ -182,31 +126,33 @@ $average = 0;
 $total = 0;
 foreach($userlist as $user)
 {
-  if($user['uren'] > $topper['uren'])
-  {
-    $topper = $user;
-  }
-  if($slacker == false)
-  {
-    $slacker = $user;
-  }
-  if(($user['uren'] < $slacker['uren']) && ($slacker != false))
-  {
-    $slacker = $user;
-  }
-  $total += $user['uren'];
+	if($user['uren'] > $topper['uren'])
+	{
+		$topper = $user;
+	}
+	if($slacker == false)
+	{
+		$slacker = $user;
+	}
+	if(($user['uren'] < $slacker['uren']) && ($slacker != false))
+	{
+		$slacker = $user;
+	}
+	$total += $user['uren'];
 }
+
 $average = $total / sizeof($userlist);
-?>
-      <hr />
-      <h3>Stats</h3>
-      <p><strong>Top teamlid:</strong> <?=$topper['user_name'] ?> met <?=$topper['uren'] ?> uur</p>
-      <p><strong>Grootste slacker:</strong> <?=$slacker['user_name'] ?> met <?=($slacker['uren'] != 0)? $slacker['uren'] : 0 ?> uur</p>
-      <p><strong>Gemiddeld aantal uren:</strong> <?=$average ?></p>
-	</div>
+
+$template->assign_vars(array(
+	"CURRENT_DATE"	=> date("m/d/y",time()),
+	"MESSAGE"		=> $message,
+	"TOP_USER_NAME"		=> $topper['user_name'],
+	"TOP_USER_HOURS"	=> $topper['uren'],
+	"SLACKER_NAME"		=> $slacker['user_name'],
+	"SLACKER_HOURS"		=> ($slacker['uren'] != 0)? $slacker['uren'] : 0,
+	"AVERAGE"		=> round($average),
 	
-	<p id="copy"><strong>Sexy Uren Registratie</strong> by Hidde "<a href="http://www.hiddejansen.com"><strong>Ganonmaster</strong></a>" Jansen &copy; All Rights Reserved</p>
-</body>
-</html>
-<?php
-mysql_close($mysql_connection);
+));
+
+//OUTPUT FUCKING EVERYTHING
+$template->display('body');

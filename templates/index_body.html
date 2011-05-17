@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Sexy Uren Registratie</title>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.12.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/styles.css" rel="stylesheet" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
+		
+<script type="text/javascript">
+	$(function() {
+		$( "#datepicker" ).datepicker();
+	});
+</script>
+</head>
+<body>
+    <div id="header">
+      <a href="index.php" id="logo">Sexy <strong>Uren Registratie</strong> </a>
+    </div>
+    <div id="content">
+		<h3>Toevoegen</h3>
+			<form action="./index.php" method="post">
+				<div>User :
+					<select name="user_id">
+						<option value="0">Selecteer...</option>
+						<!-- BEGIN user_loop -->
+						<option value="{user_loop.USER_ID}">{user_loop.USER_NAME}</option>
+						<!-- END user_loop -->
+					</select>
+					Datum :<input type="text" id="datepicker" name="datefield" value="{CURRENT_DATE}"/>
+					Aantal uren:<input type="text" name="aantaluren" value="0"/>
+					Taak:<input type="text" name="task" value="fappen"/>
+					<input type="submit" name="submit" value="Submit"/>
+      			</div>
+			</form>
+			<p>{MESSAGE}</p>
+			<hr />
+			<!-- BEGIN entry_list_loop -->
+			<h3>{entry_list_loop.USER_NAME}</h3>
+			<table>
+				<thead>
+				<tr>
+					<td class="aantalurentabel">Aantal uren</td>
+					<td class="datum">Datum</td>
+					<td class="taak">Taak</td>
+				</tr>
+				</thead>
+				<!-- BEGIN single_entry -->
+				<tr>
+					<td>{entry_list_loop.single_entry.HOURS}</td>
+					<td>{entry_list_loop.single_entry.DATE}</td>
+					<td>{entry_list_loop.single_entry.TASK}</td>
+				</tr>	
+				<!-- END single_entry -->
+				<!-- BEGIN totals -->
+				<tr style="background-color: lightgrey;">
+					<td>Totaal: {entry_list_loop.totals.TOTAL_HOURS}</td>
+					<td class="disabled"></td>
+					<td class="disabled"></td>
+				</tr>	
+				<!-- END totals -->
+			</table>
+			<br />
+			<!-- END entry_list_loop -->
+      		<hr />
+      		<h3>Stats</h3>
+      		<p><strong>Top teamlid:</strong> {TOP_USER_NAME} met {TOP_USER_HOURS} uur</p>
+      		<p><strong>Grootste slacker:</strong> {SLACKER_NAME} met {SLACKER_HOURS} uur</p>
+      		<p><strong>Gemiddeld aantal uren:</strong> {AVERAGE}</p>
+		</div>
+		<p id="copy"><strong>Sexy Uren Registratie</strong> by Hidde "<a href="http://www.hiddejansen.com"><strong>Ganonmaster</strong></a>" Jansen &copy; All Rights Reserved</p>
+</body>
+</html>
