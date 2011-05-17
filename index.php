@@ -78,7 +78,7 @@ if(isset($_POST['submit']))
 			die('Could not get result: ' . mysql_error());
 		}
 	
-		$message = 'logged!';
+		$message = '1';
 	}
 }
 

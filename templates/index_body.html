@@ -20,6 +20,15 @@
     <div id="header">
       <a href="index.php" id="logo">Sexy <strong>Uren Registratie</strong> </a>
     </div>
+    <!-- IF MESSAGE == 1 -->
+    <div id="messageok">
+    	<p>Je uren zijn gelogt.</p>
+    </div>
+    <!-- ELSEIF MESSAGE != '' -->
+    <div id="message">
+    	<p>{MESSAGE}</p>
+    </div>
+    <!-- ENDIF -->
     <div id="content">
 		<h3>Toevoegen</h3>
 			<form action="./index.php" method="post">
@@ -36,7 +45,6 @@
 					<input type="submit" name="submit" value="Submit"/>
       			</div>
 			</form>
-			<p>{MESSAGE}</p>
 			<hr />
 			<!-- BEGIN entry_list_loop -->
 			<h3>{entry_list_loop.USER_NAME}</h3>
@@ -46,7 +54,7 @@
 					<td class="aantalurentabel">Aantal uren</td>
 					<td class="datum">Datum</td>
 					<td class="taak">Taak</td>
-					<td></td>
+					<td>Verwijderen</td>
 				</tr>
 				</thead>
 				<!-- BEGIN single_entry -->
@@ -54,7 +62,7 @@
 					<td>{entry_list_loop.single_entry.HOURS}</td>
 					<td>{entry_list_loop.single_entry.DATE}</td>
 					<td>{entry_list_loop.single_entry.TASK}</td>
-					<td><a href="index.php?delete={entry_list_loop.single_entry.ENTRY_ID}">Delete</a></td>
+					<td><a class="deleteicon" alt="Verwijder entry" href="index.php?delete={entry_list_loop.single_entry.ENTRY_ID}">Delete</a></td>
 				</tr>	
 				<!-- END single_entry -->
 				<!-- BEGIN totals -->
