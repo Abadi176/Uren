@@ -135,7 +135,7 @@ while ($row = mysql_fetch_assoc($result)) {
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 {
 ?>
-    <h3><?=$userlist[$i]['user_name']?></h3>
+    <h3><?=htmlspecialchars($userlist[$i]['user_name'])?></h3>
 	<table>
 		<thead>
 		<tr>
@@ -156,7 +156,7 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 		<tr>
 			<td><?=$hourlist[$j]['aantal_uren'] ?></td>
 			<td><?=date('d-m-y', $hourlist[$j]['datum'])?></td>
-			<td><?=$hourlist[$j]['taak']?></td>
+			<td><?=htmlspecialchars($hourlist[$j]['taak'])?></td>
 		</tr>	
 <?			
 			$totaal_listed = true;
