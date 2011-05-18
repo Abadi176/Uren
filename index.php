@@ -81,10 +81,15 @@ if(isset($_POST['submit']))
 	$selecteddate = explode('/', $selecteddate);
 	$selecteddate = mktime(0, 0, 0, intval($selecteddate[0]), intval($selecteddate[1]), intval($selecteddate[2]));
 	
+	if(round($aantaluren) < 1)
+	{
+		$error = true;
+		$message = "Voer minimaal 1 uur in.";
+	}
 	
 	if($error == false)
 	{
-		$sql = "INSERT INTO uren (datum, aantal_uren, user, taak) VALUES ('" . mysql_real_escape_string($selecteddate) . "', '" . mysql_real_escape_string($aantaluren) . "', '"  . mysql_real_escape_string($selecteduser) . "', '" . mysql_real_escape_string($task) . "')";
+		$sql = "INSERT INTO uren (datum, aantal_uren, user, taak) VALUES ('" . mysql_real_escape_string($selecteddate) . "', '" . mysql_real_escape_string(round($aantaluren)) . "', '"  . mysql_real_escape_string($selecteduser) . "', '" . mysql_real_escape_string($task) . "')";
 		$result = mysql_query($sql);
 		if (!$result) {
 			die('Could not get result: ' . mysql_error());
