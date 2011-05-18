@@ -146,7 +146,7 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 	$totaal_listed = false;
 }
 
-//Stats
+//Stats & graphs
 $topper = false;
 $slacker = false;
 $average = 0;
@@ -168,6 +168,16 @@ foreach($userlist as $user)
 	$total += $user['uren'];
 }
 $average = $total / sizeof($userlist);
+
+foreach($userlist as $user)
+{
+	//Graphs
+	$template->assign_block_vars('graphs', array(
+		"USER_NAME"		=> $user['user_name'],
+		"PERCENTAGE"	=> percent($user['uren'], $topper['uren']),
+		"COLOR"			=> random_color(),
+	));
+}
 
 //Sorting features
 
@@ -217,7 +227,13 @@ $template->assign_vars(array(
 $template->display('body');
 
 
-//Useful function
+//Useful functions
+function percent($num_amount, $num_total) {
+	$count1 = $num_amount / $num_total;
+	$count2 = $count1 * 100;
+	return round($count2);
+}
+
 function getLastDayOfWeek($year, $weeknr){
  
     $offset = date('w', mktime(0,0,0,1,1,$year));
@@ -233,4 +249,13 @@ function getFirstDayOfWeek($year, $weeknr)
 	$monday = mktime(0,0,0,1,1+$offset,$year);
 
 	return strtotime('+' . ($weeknr - 1) . ' weeks', $monday);
+}
+
+function random_color(){
+    mt_srand((double)microtime()*1000000);
+    $c = '';
+    while(strlen($c)<6){
+        $c .= sprintf("%02X", mt_rand(0, 255));
+    }
+    return $c;
 }

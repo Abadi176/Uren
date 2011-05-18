@@ -99,6 +99,14 @@
       		<p><strong>Top teamlid:</strong> {TOP_USER_NAME} met {TOP_USER_HOURS} uur</p>
       		<p><strong>Grootste slacker:</strong> {SLACKER_NAME} met {SLACKER_HOURS} uur</p>
       		<p><strong>Gemiddeld aantal uren:</strong> {AVERAGE}</p>
+      		<hr />
+      		<h3>Graphs <sup style="font-size: 70%; color: darkred;">BETA</sup></h3>
+      			<ul style="width: 90%; background-color: darkgrey; margin: auto; padding-top: 10px; padding-left: 0; padding-right: 20px;padding-bottom: 20px; border: 3px solid #333;">
+      				<!-- BEGIN graphs -->
+      				<li style="display: block; height: 50px; width: {graphs.PERCENTAGE}%; background-color: #{graphs.COLOR}; margin-top: 20px; box-shadow: 1px 1px 5px #555;">{graphs.USER_NAME}</li>
+      				<!-- END graphs -->
+      			</ul>
+      		<hr />
 		</div>
 		<p id="copy"><strong>Sexy Uren Registratie</strong> by Hidde "<a href="http://www.hiddejansen.com"><strong>Ganonmaster</strong></a>" Jansen &copy; All Rights Reserved</p>
 </body>
