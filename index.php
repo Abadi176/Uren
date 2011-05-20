@@ -30,6 +30,19 @@ while ($row = mysql_fetch_assoc($result)) {
     $userlist[] = $row;
 }
 
+//Get tasklist
+$sql = "SELECT * 
+	FROM tasks
+	ORDER BY task_name ASC";
+$result = mysql_query($sql);
+if (!$result) {
+    die('Could not get result: ' . mysql_error());
+}
+while ($row = mysql_fetch_assoc($result)) {
+    $tasklist[] = $row;
+}
+
+
 //Handle deletion
 $delete_id = (isset($_GET['delete'])) ? intval($_GET['delete']) : '';
 
@@ -52,9 +65,11 @@ if(!empty($sort_year) && !empty($sort_year))
 
 //Handle submission
 $selecteduser = (isset($_POST['user_id'])) ? $_POST['user_id'] : '';
-$task = (isset($_POST['task'])) ? $_POST['task'] : '';
+$task = (isset($_POST['task'])) ? intval($_POST['task']) : '';
 $selecteddate = (isset($_POST['datefield'])) ? $_POST['datefield'] : '';
 $aantaluren = (isset($_POST['aantaluren'])) ? intval($_POST['aantaluren']) : '';
+$comments = (isset($_POST['comments'])) ? $_POST['comments'] : '';
+$newtask = (isset($_POST['newtask'])) ? $_POST['newtask'] : '';
 
 if(isset($_POST['submit']))	
 {	
@@ -87,9 +102,28 @@ if(isset($_POST['submit']))
 		$message = "Voer minimaal 1 uur in.";
 	}
 	
+	if($task == -1)
+	{
+		if(empty($newtask))
+		{
+			$error = true;
+			$message = 'Fields empty';
+		}
+		else
+		{
+			$sql = "INSERT INTO tasks (task_name) VALUES ('" . mysql_real_escape_string($newtask) . "')";
+			$result = mysql_query($sql);
+			if (!$result) {
+				die('Could not get result: ' . mysql_error());
+			}
+			
+			$task = mysql_insert_id();
+		}
+	}
+	
 	if($error == false)
 	{
-		$sql = "INSERT INTO uren (datum, aantal_uren, user, taak) VALUES ('" . mysql_real_escape_string($selecteddate) . "', '" . mysql_real_escape_string(round($aantaluren)) . "', '"  . mysql_real_escape_string($selecteduser) . "', '" . mysql_real_escape_string($task) . "')";
+		$sql = "INSERT INTO uren (datum, aantal_uren, user, taak_id, commentaar) VALUES ('" . mysql_real_escape_string($selecteddate) . "', '" . mysql_real_escape_string(round($aantaluren)) . "', '"  . mysql_real_escape_string($selecteduser) . "', '" . mysql_real_escape_string($task) . "', '" . mysql_real_escape_string($comments) . "')";
 		$result = mysql_query($sql);
 		if (!$result) {
 			die('Could not get result: ' . mysql_error());
@@ -97,6 +131,15 @@ if(isset($_POST['submit']))
 	
 		$message = '1';
 	}
+}
+
+//Generate tasklist
+foreach($tasklist as $task)
+{
+	$template->assign_block_vars('tasks', array(
+		"TASK_ID"		=> $task['task_id'],
+		"TASK_NAME"		=> $task['task_name'],
+	));
 }
 
 //Generate user list
@@ -108,11 +151,13 @@ foreach($userlist as $userdata) {
 }
 
 //Get hourlist
-$sql = "SELECT * 
-	FROM uren
-	WHERE datum >= '" . mysql_real_escape_string($begin_limit) . "'
-		AND datum <= '" . mysql_real_escape_string($end_limit) . "'
-	ORDER BY datum ASC";
+$hourlist = array();
+$sql = "SELECT t.*, u.* 
+			FROM uren u, tasks t 
+			WHERE t.task_id = u.taak_id
+				AND u.datum >= '" . mysql_real_escape_string($begin_limit) . "'
+				AND u.datum <= '" . mysql_real_escape_string($end_limit) . "'
+			ORDER BY datum ASC";
 $result = mysql_query($sql);
 if (!$result) {
     die('Could not get result: ' . mysql_error());
@@ -120,6 +165,7 @@ if (!$result) {
 while ($row = mysql_fetch_assoc($result)) {
     $hourlist[] = $row;
 }
+
 //Generate entry list for each user
 for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 {	
@@ -135,7 +181,8 @@ for ($i=0, $size=sizeof($userlist); $i < $size; $i++)
 			$template->assign_block_vars('entry_list_loop.single_entry', array(
 				"HOURS"		=> $hourlist[$j]['aantal_uren'],
 				"DATE"		=> date('d-m-y', $hourlist[$j]['datum']),
-				"TASK"		=> htmlspecialchars($hourlist[$j]['taak']),
+				"TASK"		=> htmlspecialchars($hourlist[$j]['task_name']),
+				"COMMENTS"	=> htmlspecialchars($hourlist[$j]['commentaar']),
 				"ENTRY_ID"	=> $hourlist[$j]['entry_id'],
 			));
 						
@@ -234,7 +281,7 @@ $template->display('body');
 
 //Useful functions
 function percent($num_amount, $num_total) {
-	$count1 = $num_amount / $num_total;
+	$count1 = @($num_amount / $num_total);
 	$count2 = $count1 * 100;
 	return round($count2);
 }

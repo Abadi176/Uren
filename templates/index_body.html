@@ -23,6 +23,14 @@
 		{
 		  $(this).next('table').slideToggle(600);
 		});
+		
+		$('#taskbox').change(function(){
+			var val = $(this).find('option:selected').val();
+			if(val == -1)
+			{
+				$('#newtask').show();
+			}
+		});
 	});
 </script>
 </head>
@@ -42,7 +50,7 @@
     <div class="content">
 		<h3>Toevoegen</h3>
 			<form action="./index.php" method="post">
-				<div>User :
+				<div id="insertform">User :
 					<select name="user_id">
 						<option value="0">Selecteer...</option>
 						<!-- BEGIN user_loop -->
@@ -51,7 +59,18 @@
 					</select>
 					Datum :<input type="text" id="datepicker" name="datefield" value="{CURRENT_DATE}"/>
 					Aantal uren:<input type="text" name="aantaluren" value="0"/>
-					Taak:<input type="text" name="task" value="fappen"/>
+					Taak:
+					<select id="taskbox" name="task">
+						<option value="0">Selecteer...</option>
+						<!-- BEGIN tasks -->
+						<option value="{tasks.TASK_ID}">{tasks.TASK_NAME}</option>
+						<!-- END task -->
+						<option value="-1">--Mijn taak staat er niet bij!</option>
+					</select>
+					<span id="newtask" style="display: none;">
+					Nieuwe taak:<input type="text" name="newtask" value="" />
+					</span>
+					Toelichting: <input type="text" name="comments" value="" />
 					<input type="submit" name="submit" value="Submit"/>
       			</div>
 			</form>
@@ -85,6 +104,7 @@
 					<td class="aantalurentabel">Aantal uren</td>
 					<td class="datum">Datum</td>
 					<td class="taak">Taak</td>
+					<td class="commentaar">Commentaar</td>
 					<td>Verwijderen</td>
 				</tr>
 				</thead>
@@ -93,6 +113,7 @@
 					<td>{entry_list_loop.single_entry.HOURS}</td>
 					<td>{entry_list_loop.single_entry.DATE}</td>
 					<td>{entry_list_loop.single_entry.TASK}</td>
+					<td class="commentaartd">{entry_list_loop.single_entry.COMMENTS}</td>
 					<td><a class="deleteicon" alt="Verwijder entry" href="index.php?delete={entry_list_loop.single_entry.ENTRY_ID}">Delete</a></td>
 				</tr>	
 				<!-- END single_entry -->
