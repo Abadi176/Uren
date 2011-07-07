@@ -165,13 +165,6 @@ td {
   background-color: #CCC !important;
 }
 
-#logo:after {
-  content: "\267E"; /* Here comes the ivy leaf */
-  display: inline-block; /* Put it on a new line */
-  text-align: center; /* Put it in the middle */
-  text-shadow: 0px 1px 1px #888;
-}
-
 #copy:before {
   content: "\267D"; /* Here comes the ivy leaf */
   font-size: 200%; /* Makes the leaf larger than the normal text */
