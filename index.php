@@ -48,6 +48,19 @@ $delete_id = (isset($_GET['delete'])) ? intval($_GET['delete']) : '';
 
 if($delete_id > 0)
 {
+	$sql = "SELECT * 
+		FROM uren 
+		WHERE entry_id = '" . mysql_real_escape_string($delete_id) . "'";
+	if (!$result) {
+		die('Could not get result: ' . mysql_error());
+	}
+	$row = mysql_fetch_assoc($result);
+
+	$sql = "UPDATE users 
+		SET user_uren = (user_uren - '" . mysql_real_escape_string(round($row['aantal_uren'])) . "') 
+		WHERE user_id = '" . mysql_real_escape_string($row['user']) . "'";
+	$result = mysql_query($sql);
+	
 	$sql = "DELETE 
 		FROM uren 
 		WHERE entry_id = '" . mysql_real_escape_string($delete_id) . "'";
@@ -124,11 +137,14 @@ if(isset($_POST['submit']))
 	if($error == false)
 	{
 		$sql = "INSERT INTO uren (datum, aantal_uren, user, taak_id, commentaar) VALUES ('" . mysql_real_escape_string($selecteddate) . "', '" . mysql_real_escape_string(round($aantaluren)) . "', '"  . mysql_real_escape_string($selecteduser) . "', '" . mysql_real_escape_string($task) . "', '" . mysql_real_escape_string($comments) . "')";
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Could not get result: ' . mysql_error());
-		}
+		mysql_query($sql);
 	
+		$sql = "UPDATE users 
+			SET user_uren = (user_uren + " . mysql_real_escape_string(round($aantaluren)) . ") 
+			WHERE user_id = '" . mysql_real_escape_string($selecteduser) . "'";
+		echo($sql);
+		mysql_query($sql);
+		
 		$message = '1';
 	}
 }

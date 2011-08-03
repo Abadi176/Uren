@@ -1,5 +1,5 @@
 <?php
-include_once('config.php');
+include_once('./includes/config.php');
 
 $message = '';
 $mysql_connection = mysql_connect('localhost', $mysql_username, $mysql_password);
